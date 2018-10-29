@@ -22,7 +22,6 @@ function getRepoContributors(repoOwner, repoName, cb) {
   };
 
   request(options, function(err, response, body) {
-    console.log(response);
     mkdirp('./avatars', function(err) {
       if (err) {
         console.log(err);
