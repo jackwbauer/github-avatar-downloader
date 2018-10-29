@@ -17,16 +17,14 @@ function getRepoContributors(repoOwner, repoName, cb) {
   };
 
   request(options, function(err, response, body) {
-    cb(err, body);
-  })
-  .on('error', function(err) {
-    throw err;
-  })
-  .on('response', function(response) {
-    cb(JSON.parse(response));
+    cb(err, JSON.parse(body));
   });
 }
 
-function getAvatars(json) {
-  console.log(json);
+function getAvatars(err, body) {
+  var avatars = [];
+  body.forEach(function(user) {
+    avatars.push(user['avatar_url']);
+  });
+  console.log(avatars);
 }
