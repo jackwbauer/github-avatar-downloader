@@ -20,16 +20,19 @@ function getRepoContributors(repoOwner, repoName, cb) {
       'User-Agent' : 'request'
     }
   };
-
-  request(options, function(err, response, body) {
-    mkdirp('./avatars', function(err) {
-      if (err) {
-        console.log(err);
-      } else {
-        cb(err, JSON.parse(body));
-      }
+  if(repoOwner && repoName) {
+    request(options, function(err, response, body) {
+      mkdirp('./avatars', function(err) {
+        if (err) {
+          console.log(err);
+        } else {
+          cb(err, JSON.parse(body));
+        }
+      });
     });
-  });
+  } else {
+    console.log("Requires a repo owner and repo name.");
+  }
 }
 
 function getAvatars(err, body) {
