@@ -1,36 +1,40 @@
 var request = require('request');
 var fs = require('fs');
+var mkdirp = require('mkdirp');
 var token = require('./secrets');
 
+var myArgs = process.argv.slice(2);
+
 console.log('Welcome to the Github Avatar Downloader');
-// downloadImageByURL("https://avatars2.githubusercontent.com/u/2741?v=3&s=466", "avatars/kvirani.jpg");
-getRepoContributors('jquery', 'jquery', getAvatars);
+getRepoContributors(myArgs[0], myArgs[1], getAvatars);
 
 function getRepoContributors(repoOwner, repoName, cb) {
   var data = "";
 
   var options = {
     url : (`https://api.github.com/repos/${repoOwner}/${repoName}/contributors`),
+    qs : {
+      access_token : token.GITHUB_TOKEN
+    },
     headers : {
-      'Authentication' : (`token ${token}`),
       'User-Agent' : 'request'
     }
   };
 
   request(options, function(err, response, body) {
-    cb(err, JSON.parse(body));
+    console.log(response);
+    mkdirp('./avatars', function(err) {
+      if (err) {
+        console.log(err);
+      } else {
+        cb(err, JSON.parse(body));
+      }
+    });
   });
 }
 
 function getAvatars(err, body) {
-  var avatars = [];
-  var users = [];
-  body.forEach(function(user) {
-    avatars.push(user.avatar_url);
-    users.push(user.id);
-  });
-  avatars.forEach((url, i) => downloadImageByURL(url, 'avatars/'+users[i]));
-  // console.log(avatars);
+  body.forEach((contributor) => downloadImageByURL(contributor.avatar_url, (`avatars/${contributor.id}.jpg`)));
 }
 
 function downloadImageByURL(url, filePath) {
