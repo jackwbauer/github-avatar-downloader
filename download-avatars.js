@@ -24,10 +24,12 @@ function getRepoContributors(repoOwner, repoName, cb) {
 
 function getAvatars(err, body) {
   var avatars = [];
+  var users = [];
   body.forEach(function(user) {
-    avatars.push(user['avatar_url']);
+    avatars.push(user.avatar_url);
+    users.push(user.id);
   });
-  avatars.forEach((url, i) => downloadImageByURL(url, 'avatars/'+i));
+  avatars.forEach((url, i) => downloadImageByURL(url, 'avatars/'+users[i]));
   // console.log(avatars);
 }
 
@@ -36,14 +38,7 @@ function downloadImageByURL(url, filePath) {
   .on('error', function(err) {
     throw err;
   })
-  .on('response', () => console.log('Downloading image', url))
-  .on('end', () => console.log('Download complete.'))
+  .on('response', () => console.log(`Downloading image from ${url} into ${filePath}`))
+  .on('end', () => console.log('Download complete from', url))
   .pipe(fs.createWriteStream(filePath));
-}
-
-function generatePathFromURL(url) {
-  var path = "";
-  path = url.replace('https://avatars' + /\[[0-9]+\]/ + '.githubusercontent.com/u/')
-  console.log(path);
-  return path;
 }
