@@ -1,7 +1,7 @@
+require('dotenv').config()
 var request = require('request');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
-var token = require('./secrets');
 
 var myArgs = process.argv.slice(2);
 
@@ -14,12 +14,13 @@ function getRepoContributors(repoOwner, repoName, cb) {
   var options = {
     url : (`https://api.github.com/repos/${repoOwner}/${repoName}/contributors`),
     qs : {
-      access_token : token.GITHUB_TOKEN
+      access_token : process.env.GITHUB_TOKEN
     },
     headers : {
       'User-Agent' : 'request'
     }
   };
+
   if(repoOwner && repoName) {
     request(options, function(err, response, body) {
       mkdirp('./avatars', function(err) {
